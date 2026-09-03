@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Color Academy — kvalifikační dotazník</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241D29;
+    --ink-soft:#5E5566;
+    --muted:#8F8798;
+    --ground:#F3F0F5;
+    --card:#FFFFFF;
+    --line:#E2DCE8;
+    --accent:#6E2F4D;
+    --accent-wash:#F7EDF2;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Karla',system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    transition:background-color .6s ease;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:640px;
+    margin:0 auto;
+    padding:30px 24px 64px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .brand{
+    font-family:'Fraunces',Georgia,serif;
+    font-size:15px;
+    color:var(--ink-soft);
+    margin-bottom:20px;
+  }
+  .brand b{font-weight:600;color:var(--ink)}
+
+  /* ---------- látky na tyčce ---------- */
+  .rail{margin-bottom:14px}
+  .rail svg{display:block;width:100%;height:auto}
+  .drape{transition:transform .55s cubic-bezier(.22,.9,.3,1)}
+  .drape .cloth{transition:fill .55s ease}
+
+  .counter{
+    font-size:13.5px;
+    color:var(--muted);
+    margin-bottom:30px;
+  }
+
+  .step{display:none}
+  .step.active{display:block}
+
+  h1{
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:500;
+    font-size:clamp(27px,5vw,35px);
+    line-height:1.18;
+    letter-spacing:-.015em;
+    margin:0 0 10px;
+    max-width:19ch;
+  }
+
+  .hint{
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0 0 26px;
+    max-width:52ch;
+  }
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+
+  .opt{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    width:100%;
+    text-align:left;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    font:inherit;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{border-color:#C9BFD4}
+  .opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .opt.sel{border-color:var(--accent);background:var(--accent-wash)}
+
+  .mark{
+    flex:none;
+    width:22px;height:22px;
+    margin-top:1px;
+    border:1.5px solid #CDC4D6;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-size:12px;
+    color:transparent;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .multi .mark{border-radius:5px}
+  .opt.sel .mark{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .opt .txt{flex:1}
+  .opt .add{
+    display:block;
+    color:var(--ink-soft);
+    font-size:15.5px;
+    padding-left:14px;
+    border-left:2px solid var(--line);
+    margin-top:7px;
+  }
+  .opt.sel .add{border-left-color:#D9B9CA}
+
+  .field{margin-bottom:16px}
+  label{
+    display:block;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  input{
+    width:100%;
+    font:inherit;
+    color:var(--ink);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:13px 15px;
+  }
+  input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+
+  .consent{
+    display:flex;gap:11px;align-items:flex-start;
+    font-size:14.5px;color:var(--ink-soft);
+    margin:20px 0 26px;
+    max-width:54ch;
+  }
+  .consent input{width:auto;margin-top:3px;accent-color:var(--accent)}
+
+  .nav{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-top:28px;
+  }
+
+  .btn{
+    font:inherit;font-weight:600;
+    background:var(--accent);
+    color:#fff;border:none;border-radius:9px;
+    padding:14px 30px;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .btn:hover{background:#5A2540}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .btn[disabled]{background:#CFC6D6;cursor:not-allowed}
+
+  .back{
+    background:none;border:none;
+    font:inherit;font-size:15px;
+    color:var(--muted);cursor:pointer;
+    padding:6px 2px;
+    text-decoration:underline;text-underline-offset:3px;
+  }
+  .back:hover{color:var(--ink)}
+  .back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .back[hidden]{display:none}
+
+  .debug{
+    margin-top:auto;
+    padding-top:34px;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .debug b{color:var(--ink-soft);font-weight:600}
+  .debug code{background:#E7E1EC;border-radius:4px;padding:1px 6px}
+
+  @media (max-width:520px){
+    body{font-size:16px}
+    .wrap{padding:24px 18px 48px}
+    .btn{width:100%;text-align:center}
+    .nav{flex-direction:column-reverse;align-items:stretch;gap:10px}
+    .back{text-align:center}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand"><b>Color Academy</b> by Image Makers Academy</div>
+
+  <div class="rail" aria-hidden="true">
+    <svg id="rail" viewBox="0 0 600 122" preserveAspectRatio="none">
+      <defs>
+        <clipPath id="railClip">
+          <rect x="0" y="11" width="600" height="111"/>
+        </clipPath>
+        <linearGradient id="fold" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"   stop-color="#000" stop-opacity=".13"/>
+          <stop offset=".17" stop-color="#fff" stop-opacity=".15"/>
+          <stop offset=".41" stop-color="#000" stop-opacity=".07"/>
+          <stop offset=".65" stop-color="#fff" stop-opacity=".13"/>
+          <stop offset=".87" stop-color="#000" stop-opacity=".10"/>
+          <stop offset="1"   stop-color="#000" stop-opacity=".17"/>
+        </linearGradient>
+      </defs>
+
+      <g clip-path="url(#railClip)" id="drapes"></g>
+      <rect x="0" y="7" width="600" height="5" rx="2.5" fill="#2E2634"/>
+    </svg>
+  </div>
+
+  <div class="counter" id="counter"></div>
+
+  <form id="form" autocomplete="on" novalidate>
+    <div id="steps"></div>
+    <div class="nav">
+      <button type="button" class="back" id="back">Zpět</button>
+      <button type="button" class="btn" id="next">Pokračovat</button>
+    </div>
+  </form>
+
+  <div class="debug" id="debug"></div>
+
+</div>
+
+<script>
+/* =========================================================
+   LÁTKY — barva návleku pro každý krok + tón pozadí
+========================================================= */
+const CLOTHS = [
+  { color:'#D99441', tint:'#F5F1EC' },
+  { color:'#7E9AC4', tint:'#EDF0F5' },
+  { color:'#A85838', tint:'#F5EEEA' },
+  { color:'#4A3A6B', tint:'#EFEDF4' },
+  { color:'#5F8A6B', tint:'#ECF2ED' },
+  { color:'#C4718A', tint:'#F6EDF0' }
+];
+const IDLE = '#DDD6E4';
+
+/* =========================================================
+   DATA DOTAZNÍKU
+   Q4 rozhoduje o hlavní nabídce. Ostatní otázky personalizují text.
+========================================================= */
+const Q5 = {
+  beauty:{
+    title:'Představte si klientku ve svém křesle za tři měsíce. Co by pro vás bylo největší vítězství?',
+    opts:[
+      {id:'a',text:'Umět jí konečně odpovědět na otázku „co mi sluší“ s naprostou jistotou'},
+      {id:'b',text:'Nabídnout jí typologii jako novou službu a dát si za ni svou cenu'},
+      {id:'c',text:'Mít v diáři vedle své současné práce i pravidelné typologie'},
+      {id:'d',text:'Být ta v okolí, za kterou se jezdí právě kvůli barvám'}
+    ]
+  },
+  zmena:{
+    title:'Co by pro vás znamenalo nejvíc, kdyby se to povedlo?',
+    opts:[
+      {id:'a',text:'Mít konečně něco svého, co mě baví'},
+      {id:'b',text:'Udělat první placenou konzultaci a vědět, že to není jen sen'},
+      {id:'c',text:'Mít vedle práce příjem, který mi otevře dveře k rozhodnutí odejít'},
+      {id:'d',text:'Za rok dělat tohle naplno místo své současné práce'}
+    ]
+  },
+  mama:{
+    title:'Co by pro vás byl důkaz, že to má smysl?',
+    opts:[
+      {id:'a',text:'Mít něco svého, co není o dětech ani o domácnosti'},
+      {id:'b',text:'Vydělat si první vlastní peníze, o kterých rozhoduju já'},
+      {id:'c',text:'Mít pár klientek týdně a zvládat to vedle rodiny'},
+      {id:'d',text:'Mít za dva roky práci, ke které se vrátím místo do zaměstnání'}
+    ]
+  }
+};
+
+const questions = [
+  { key:'q1', title:'Co nejlépe vystihuje vaši současnou situaci?', opts:[
+    {id:'a',text:'Pracuji v beauty oboru — kadeřnictví, kosmetika, vizáž, stylistika, nehty'},
+    {id:'b',text:'Jsem zaměstnaná mimo beauty obor a přemýšlím o změně'},
+    {id:'c',text:'Jsem na mateřské nebo rodičovské, případně se z ní vracím'},
+    {id:'d',text:'Podnikám v jiném oboru nebo momentálně nepracuji'}
+  ]},
+  { key:'q2', title:'Proč vás barevná typologie zajímá?', opts:[
+    {id:'a',text:'Hlavně pro sebe — chci konečně vědět, co mi sluší'},
+    {id:'b',text:'Chci ji přidat ke službám, které už dnes nabízím'},
+    {id:'c',text:'Chci si z ní vybudovat vlastní službu a příjem'},
+    {id:'d',text:'Chci na ní postavit novou kariéru'}
+  ]},
+  { key:'q3', title:'Máte už nějakou zkušenost s barevnou typologií?', opts:[
+    {id:'a',text:'Ne, začínám úplně od začátku'},
+    {id:'b',text:'Zajímám se o to sama, ale nikdy jsem nikoho neurčovala'},
+    {id:'c',text:'Absolvovala jsem kurz, ale nejsem si výsledkem jistá'},
+    {id:'d',text:'Typologii už dělám a chci se posunout dál'}
+  ]},
+  { key:'q4', title:'Kam až chcete ve svých znalostech barev dojít?', opts:[
+    {id:'a',text:'Chci umět určit barevný typ a poradit s barvami v oblečení, vlasech a make-upu.'},
+    {id:'b',text:'To samé —',    add:'a k tomu rozumět tomu, jak barvy působí na psychiku, náladu a první dojem.'},
+    {id:'c',text:'Obojí výše —', add:'a k tomu vědět, jak z toho udělat službu, kterou umím nabídnout a prodat.'}
+  ]},
+  { key:'q5', title:'', hint:'Zaškrtněte, co vás teď nejvíc vystihuje.', multi:true, opts:[] },
+  { key:'contact', title:'Kam vám máme poslat výsledek?',
+    hint:'Podle vašich odpovědí vám ukážeme, která cesta vám sedí nejvíc.', contact:true }
+];
+
+const answers = {};
+let i = 0;
+
+const stepsEl  = document.getElementById('steps');
+const drapesEl = document.getElementById('drapes');
+const cntEl    = document.getElementById('counter');
+const backBtn  = document.getElementById('back');
+const nextBtn  = document.getElementById('next');
+
+const NS = 'http://www.w3.org/2000/svg';
+const N  = questions.length;
+const W  = 600 / N;
+
+function clothPath(w, len){
+  return 'M0,0 L' + w + ',0 L' + w + ',' + (len-10) +
+         ' C' + (w*0.78) + ',' + (len+7) + ' ' + (w*0.60) + ',' + (len-13) + ' ' + (w*0.42) + ',' + (len+2) +
+         ' C' + (w*0.26) + ',' + (len+13) + ' ' + (w*0.13) + ',' + (len-9) + ' 0,' + (len-3) + ' Z';
+}
+
+questions.forEach((q, n) => {
+  const g = document.createElementNS(NS,'g');
+  g.setAttribute('class','drape');
+  const len = 72 + (n % 3) * 9;
+
+  const cloth = document.createElementNS(NS,'path');
+  cloth.setAttribute('class','cloth');
+  cloth.setAttribute('d', clothPath(W + 1.5, len));
+  cloth.setAttribute('fill', IDLE);
+
+  const shade = document.createElementNS(NS,'path');
+  shade.setAttribute('d', clothPath(W + 1.5, len));
+  shade.setAttribute('fill','url(#fold)');
+
+  g.append(cloth, shade);
+  g.dataset.len = len;
+  g.setAttribute('transform', 'translate(' + (n*W) + ',' + (11 - len - 16) + ')');
+  drapesEl.appendChild(g);
+});
+
+function paintRail(){
+  [...drapesEl.children].forEach((g, n) => {
+    const on  = n <= i;
+    const len = +g.dataset.len;
+    g.setAttribute('transform', 'translate(' + (n*W) + ',' + (on ? 11 : 11 - len - 16) + ')');
+    g.querySelector('.cloth').setAttribute('fill', on ? CLOTHS[n].color : IDLE);
+  });
+  document.body.style.backgroundColor = CLOTHS[i].tint;
+}
+
+function segment(){
+  const a = answers.q1;
+  if (a === 'a') return 'beauty';
+  if (a === 'c') return 'mama';
+  return 'zmena';
+}
+
+function render(){
+  const q = questions[i];
+
+  if (q.key === 'q5'){
+    const s = Q5[segment()];
+    q.title = s.title;
+    q.opts  = s.opts;
+  }
+
+  stepsEl.innerHTML = '';
+  const step = document.createElement('div');
+  step.className = 'step active';
+
+  const h = document.createElement('h1');
+  h.textContent = q.title;
+  step.appendChild(h);
+
+  if (q.hint){
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = q.hint;
+    step.appendChild(p);
+  }
+
+  if (q.contact){
+    step.appendChild(contactFields());
+  } else {
+    const box = document.createElement('div');
+    box.className = 'opts' + (q.multi ? ' multi' : '');
+    q.opts.forEach(o => box.appendChild(optionBtn(q, o)));
+    step.appendChild(box);
+  }
+
+  stepsEl.appendChild(step);
+
+  paintRail();
+  cntEl.textContent = q.contact ? 'Poslední krok' : 'Otázka ' + (i + 1) + ' z ' + (N - 1);
+
+  backBtn.hidden = i === 0;
+  nextBtn.textContent = q.contact ? 'Odeslat a zobrazit nabídku' : 'Pokračovat';
+  syncNext();
+  updateDebug();
+}
+
+function optionBtn(q, o){
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'opt';
+
+  const mark = document.createElement('span');
+  mark.className = 'mark';
+  mark.textContent = '✓';
+
+  const txt = document.createElement('span');
+  txt.className = 'txt';
+  txt.textContent = o.text;
+  if (o.add){
+    const add = document.createElement('span');
+    add.className = 'add';
+    add.textContent = o.add;
+    txt.appendChild(add);
+  }
+
+  b.append(mark, txt);
+
+  const cur = answers[q.key];
+  const on  = q.multi ? Array.isArray(cur) && cur.includes(o.id) : cur === o.id;
+  b.classList.toggle('sel', !!on);
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+
+  b.addEventListener('click', () => {
+    if (q.multi){
+      const list = Array.isArray(answers[q.key]) ? answers[q.key] : [];
+      answers[q.key] = list.includes(o.id) ? list.filter(x => x !== o.id) : [...list, o.id];
+      render();
+    } else {
+      answers[q.key] = o.id;
+      [...b.parentNode.children].forEach(el => {
+        el.classList.remove('sel');
+        el.setAttribute('aria-pressed','false');
+      });
+      b.classList.add('sel');
+      b.setAttribute('aria-pressed','true');
+      syncNext();
+      setTimeout(go, 220);
+    }
+  });
+
+  return b;
+}
+
+function contactFields(){
+  const frag = document.createDocumentFragment();
+  [
+    {id:'jmeno',   label:'Jméno a příjmení', type:'text',  ac:'name'},
+    {id:'email',   label:'E-mail',           type:'email', ac:'email'},
+    {id:'telefon', label:'Telefon',          type:'tel',   ac:'tel'}
+  ].forEach(f => {
+    const w = document.createElement('div');
+    w.className = 'field';
+    const l = document.createElement('label');
+    l.textContent = f.label; l.htmlFor = f.id;
+    const inp = document.createElement('input');
+    inp.id = f.id; inp.name = f.id; inp.type = f.type; inp.autocomplete = f.ac;
+    inp.value = answers[f.id] || '';
+    inp.addEventListener('input', e => { answers[f.id] = e.target.value; syncNext(); });
+    w.append(l, inp);
+    frag.appendChild(w);
+  });
+
+  const c = document.createElement('label');
+  c.className = 'consent';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.checked = !!answers.souhlas;
+  cb.addEventListener('change', e => { answers.souhlas = e.target.checked; syncNext(); });
+  const sp = document.createElement('span');
+  sp.textContent = 'Souhlasím se zpracováním údajů a se zasíláním informací o Color Academy.';
+  c.append(cb, sp);
+  frag.appendChild(c);
+
+  return frag;
+}
+
+function isValid(){
+  const q = questions[i];
+  if (q.contact) return !!(answers.jmeno && answers.email && answers.telefon && answers.souhlas);
+  if (q.multi)   return Array.isArray(answers[q.key]) && answers[q.key].length > 0;
+  return !!answers[q.key];
+}
+
+function syncNext(){
+  nextBtn.disabled = !isValid();
+}
+
+function go(){
+  if (!isValid()) return;
+  if (i < N - 1){
+    i++; render();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    updateDebug(true);
+  }
+}
+
+nextBtn.addEventListener('click', go);
+backBtn.addEventListener('click', () => {
+  if (i > 0){ i--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+
+/* ---------- ladicí výpis (jen pro testování) ---------- */
+function updateDebug(done){
+  const d = document.getElementById('debug');
+  if (!answers.q1){ d.innerHTML = ''; return; }
+  const pages  = {beauty:'1 — beauty profesionálky', zmena:'2 — ženy, které chtějí změnu', mama:'3 — maminky'};
+  const offers = {a:'1 — praktická typologie', b:'2 — typologie + psychologie barev', c:'3 — vše + business'};
+  let out = '<b>Vyhodnocení (jen pro testování)</b><br>';
+  out += 'Stránka: <code>' + pages[segment()] + '</code><br>';
+  out += 'Hlavní nabídka: <code>' + (answers.q4 ? offers[answers.q4] : 'čeká na Q4') + '</code>';
+  if (done) out += '<br>Formulář dokončen — odesílání není v prototypu napojené.';
+  d.innerHTML = out;
+}
+
+render();
+</script>
+
+</body>
+</html>
